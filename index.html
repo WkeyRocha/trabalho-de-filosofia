@@ -28,13 +28,11 @@
       50%{transform:translateY(-6px);}
     }
     header p{margin:0 0 0 auto;font-size:12px;color:var(--muted)}
-
     .messages{height:min(60vh,560px);overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
     .msg{max-width:80%;padding:12px 14px;border-radius:16px;position:relative;word-wrap:break-word;white-space:pre-wrap;opacity:0;transform:translateY(20px);animation:fadeInUp .5s forwards}
     .bot{align-self:flex-start;background:var(--bot);border:1px solid rgba(255,255,255,.06);animation-delay:.1s;}
     .user{align-self:flex-end;background:linear-gradient(120deg,var(--user),#22d3ee);color:#001018;animation-delay:0;}
     .time{display:block;margin-top:6px;font-size:11px;color:#b6c2cf;opacity:.75}
-
     .quick{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 8px}
     .chip{border:1px solid rgba(255,255,255,.12);color:#e2e8f0;background:transparent;padding:8px 10px;border-radius:999px;font-size:13px;cursor:pointer;transition:background .2s,border .2s,transform .2s;animation:fadeInChip .5s;}
     .chip:hover{border-color:var(--accent);background:rgba(34,211,238,.08);transform:scale(1.06)}
@@ -42,7 +40,6 @@
       from { opacity:0; transform:scale(0.98);}
       to { opacity:1; transform:scale(1);}
     }
-
     .inputbar{display:flex;gap:10px;padding:14px;border-top:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.25)}
     .inputbar input{flex:1;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:#e5e7eb;transition:border .2s;animation:slideUpInput .4s;}
     .inputbar input:focus{border-color:var(--accent)}
@@ -57,7 +54,6 @@
       from {transform:translateY(24px);opacity:0;}
       to {transform:translateY(0);opacity:1;}
     }
-
     footer{padding:10px 16px;color:var(--muted);font-size:12px;text-align:center}
     @keyframes fadeInUp {
       to{opacity:1; transform:translateY(0);}
@@ -71,26 +67,20 @@
         <span class="dot" aria-hidden="true"></span>
         <h1>Gabriel — trabalho de filosofia</h1>
       </header>
-
       <div class="messages" id="messages" aria-live="polite"></div>
-
       <div class="quick" aria-label="Perguntas rápidas">
         <button class="chip" data-q="Você acredita que a internet possui uma função social? Explique">Pergunta 1</button>
         <button class="chip" data-q="Parte das postagens em redes sociais são transmitidas de forma rápida, mas geram um impacto imediato. Como você avalia as redes sociais?">Pergunta 2</button>
         <button class="chip" data-q="fale sobre algo que viu em redes sociais e que gerou um impacto em você">Pergunta 3</button>
       </div>
-
       <div class="inputbar">
         <input id="input" type="text" placeholder="Digite sua pergunta exatamente como nas opções…" autocomplete="off" />
         <button id="send">Enviar</button>
       </div>
-
       <footer>feito por felix raphael vulgo rochinha</footer>
     </div>
   </div>
-
   <script>
-    // Base de conhecimento (várias respostas para cada pergunta)
     const KB = {
       "Você acredita que a internet possui uma função social? Explique": [
         "Sim, acredito que a internet possui uma função social, pois ela conecta pessoas de diferentes partes do mundo, facilita a comunicação, o acesso à informação e promove a inclusão digital.",
@@ -108,113 +98,27 @@
         "Me impressiona como as redes conseguem viralizar movimentos sociais, tornando conhecidos casos de injustiça que, sem elas, ficariam desconhecidos."
       ]
     };
-
-    function getAnswer(question) {
+    function getAnswer(question){
       const answers = KB[question];
-      if (!answers) return ["Desculpe, só sei responder a essas 3 perguntas específicas. Use os botões acima ou copie a pergunta exatamente."];
-      // Escolhe uma resposta aleatória
-      return [answers[Math.floor(Math.random() * answers.length)]];
+      if(!answers) return ["Desculpe, só sei responder a essas 3 perguntas específicas. Use os botões acima ou copie a pergunta exatamente."];
+      return [answers[Math.floor(Math.random()*answers.length)]];
     }
-
-    const elMsgs = document.getElementById('messages');
-    const elInput = document.getElementById('input');
-    const elSend = document.getElementById('send');
-    const elChips = document.querySelectorAll('.chip');
-
-    function time(){
-      const d = new Date();
-      return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-    }
-
-    function bubble(text, who='bot'){
-      const div = document.createElement('div');
-      div.className = `msg ${who}`;
-      div.innerText = text;
-      const t = document.createElement('span');
-      t.className = 'time';
-      t.textContent = who === 'bot' ? `bot • ${time()}` : `você • ${time()}`;
-      div.appendChild(t);
-      // animação extra com fade e "typing" para bot
-      if(who==='bot'){
-        div.style.opacity='0';
-        div.style.transform='translateY(18px)';
-        setTimeout(()=>{div.style.opacity='1';div.style.transform='translateY(0)';},120);
-      }
-      elMsgs.appendChild(div);
-      elMsgs.scrollTop = elMsgs.scrollHeight;
-    }
-
-    function botAnswer(question){
-      // resposta aleatória para cada pergunta
-      getAnswer(question).forEach(ans => bubble(ans, 'bot'));
-    }
-
-    function send(){
-      const text = (elInput.value || '').trim();
-      if(!text) return;
-      elInput.value='';
-      bubble(text, 'user');
-      // pequena latência estética + typing anim
-      elSend.disabled = true;
-      typingAnim();
-      setTimeout(()=>{
-        stopTypingAnim();
-        botAnswer(text);
-        elSend.disabled=false;
-        elInput.focus();
-      }, 650);
-    }
-
-    // animação tipo "digitando..." do bot
+    const elMsgs=document.getElementById('messages');
+    const elInput=document.getElementById('input');
+    const elSend=document.getElementById('send');
+    const elChips=document.querySelectorAll('.chip');
+    function time(){const d=new Date();return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+    function bubble(text,who='bot'){const div=document.createElement('div');div.className=`msg ${who}`;div.innerText=text;const t=document.createElement('span');t.className='time';t.textContent=who==='bot'?`bot • ${time()}`:`você • ${time()}`;div.appendChild(t);if(who==='bot'){div.style.opacity='0';div.style.transform='translateY(18px)';setTimeout(()=>{div.style.opacity='1';div.style.transform='translateY(0)';},120);}elMsgs.appendChild(div);elMsgs.scrollTop=elMsgs.scrollHeight;}
+    function botAnswer(question){getAnswer(question).forEach(ans=>bubble(ans,'bot'));}
+    function send(){const text=(elInput.value||'').trim();if(!text)return;elInput.value='';bubble(text,'user');elSend.disabled=true;typingAnim();setTimeout(()=>{stopTypingAnim();botAnswer(text);elSend.disabled=false;elInput.focus();},650);}
     let typingDiv=null;
-    function typingAnim(){
-      typingDiv = document.createElement('div');
-      typingDiv.className = 'msg bot';
-      typingDiv.innerHTML = '<span class="dots-typing"><span>.</span><span>.</span><span>.</span></span>';
-      typingDiv.style.color='#22d3ee';
-      typingDiv.style.fontStyle='italic';
-      typingDiv.style.opacity='0.8';
-      typingDiv.style.letterSpacing='2px';
-      typingDiv.style.paddingLeft='18px';
-      elMsgs.appendChild(typingDiv);
-      elMsgs.scrollTop = elMsgs.scrollHeight;
-    }
-    function stopTypingAnim(){
-      if(typingDiv) typingDiv.remove();
-      typingDiv=null;
-    }
-
-    elSend.addEventListener('click', send);
-    elInput.addEventListener('keydown', e=>{ if(e.key==='Enter') send(); });
-    elChips.forEach(ch=> ch.addEventListener('click', ()=>{
-      elInput.value = ch.dataset.q;
-      elInput.focus();
-      // animar chip ao clicar
-      ch.animate([
-        {transform:'scale(1)', background:'#0000'},
-        {transform:'scale(1.08)', background:'rgba(34,211,238,.13)'},
-        {transform:'scale(1)', background:'#0000'}
-      ], {duration:340});
-    }));
-
-    // Mensagem inicial animada
-    setTimeout(()=>bubble('Opa, fui feito para o trabalho de filosofia, espero que gostem!', 'bot'), 320);
-
-    // dots animação CSS injetada
-    (function(){
-      const style = document.createElement('style');
-      style.textContent = `
-      .dots-typing span {
-        display: inline-block;
-        opacity: .7;
-        animation: typingDot 1.2s infinite;
-      }
-      .dots-typing span:nth-child(2) {animation-delay: .2s;}
-      .dots-typing span:nth-child(3) {animation-delay: .4s;}
-      @keyframes typingDot { 0%,100%{ opacity:.5;} 50%{ opacity:1;} }
-      `;
-      document.head.appendChild(style);
-    })();
+    function typingAnim(){typingDiv=document.createElement('div');typingDiv.className='msg bot';typingDiv.innerHTML='<span class="dots-typing"><span>.</span><span>.</span><span>.</span></span>';typingDiv.style.color='#22d3ee';typingDiv.style.fontStyle='italic';typingDiv.style.opacity='0.8';typingDiv.style.letterSpacing='2px';typingDiv.style.paddingLeft='18px';elMsgs.appendChild(typingDiv);elMsgs.scrollTop=elMsgs.scrollHeight;}
+    function stopTypingAnim(){if(typingDiv)typingDiv.remove();typingDiv=null;}
+    elSend.addEventListener('click',send);
+    elInput.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+    elChips.forEach(ch=>ch.addEventListener('click',()=>{elInput.value=ch.dataset.q;elInput.focus();ch.animate([{transform:'scale(1)',background:'#0000'},{transform:'scale(1.08)',background:'rgba(34,211,238,.13)'},{transform:'scale(1)',background:'#0000'}],{duration:340});}));
+    setTimeout(()=>bubble('Opa, fui feito para o trabalho de filosofia, espero que gostem!','bot'),320);
+    (function(){const style=document.createElement('style');style.textContent=`.dots-typing span{display:inline-block;opacity:.7;animation:typingDot 1.2s infinite;}.dots-typing span:nth-child(2){animation-delay:.2s;}.dots-typing span:nth-child(3){animation-delay:.4s;}@keyframes typingDot{0%,100%{opacity:.5;}50%{opacity:1;}}`;document.head.appendChild(style);})();
   </script>
 </body>
 </html>
